@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using TeeSharp.Core;
 
 namespace TeeSharp.Common.Snapshots
@@ -38,34 +41,29 @@ namespace TeeSharp.Common.Snapshots
             return null;
         }
 
-        public bool AddItem(BaseSnapshotItem obj, int id)
+        public bool AddItem<T>(T item, int id) where T : ISnapshotItem
         {
-            if (obj == null)
-            {
-                Debug.Warning("snapshots", "add null object");
-                return false;
-            }
-
             if (SnapshotItems.Count + 1 >= MaxItems)
             {
                 Debug.Warning("snapshots", "too many items");
                 return false;
             }
 
-            var itemSize = SnapshotItemsInfo.GetSize(obj.GetType());
+            var itemSize = Unsafe.SizeOf<T>();
             if (SnapshotSize + itemSize >= Snapshot.MaxSize)
             {
                 Debug.Warning("snapshots", "too much data");
                 return false;
             }
 
-            var item = new SnapshotItem(id, obj);
+            var snapshotItem = new SnapshotItem(id, item);
             SnapshotSize += itemSize;
-            SnapshotItems.Add(item);
+            SnapshotItems.Add(snapshotItem);
             return true;
         }
 
-        public T NewItem<T>(int id) where T : BaseSnapshotItem, new()
+        public ref T 
+        public SnapshotItemWrapper<T> NewItem<T>(int id) where T : struct, ISnapshotItem
         {
             if (SnapshotItems.Count + 1 >= MaxItems)
             {
@@ -73,8 +71,7 @@ namespace TeeSharp.Common.Snapshots
                 return null;
             }
 
-            var itemSize = SnapshotItemsInfo.GetSize<T>();
-
+            var itemSize = Unsafe.SizeOf<T>();
             if (SnapshotSize + itemSize >= Snapshot.MaxSize)
             {
                 Debug.Warning("snapshots", "too much data");

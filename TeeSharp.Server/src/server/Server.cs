@@ -403,7 +403,7 @@ namespace TeeSharp.Server
             return id >= 0 && SnapshotBuilder.AddItem(item, id);
         }
 
-        public override T SnapshotItem<T>(int id)
+        public override T? SnapshotItem<T>(int id)
         {
             Debug.Assert(id >= 0 && id <= 65535, "incorrect id");
 

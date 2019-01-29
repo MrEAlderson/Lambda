@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using TeeSharp.Common.Snapshots.Extensions;
 
 namespace TeeSharp.Common.Snapshots
 {
@@ -113,7 +116,7 @@ namespace TeeSharp.Common.Snapshots
             return currentIndex + size <= endIndex;
         }
 
-        public static int CreateDelta(Snapshot from, Snapshot to, int[] outputData)
+        public static int CreateDelta(Snapshot from, Snapshot to, Span<int> outputData)
         {
             var numDeletedItems = 0;
             var numUpdatedItems = 0;
@@ -147,7 +150,7 @@ namespace TeeSharp.Common.Snapshots
             for (var i = 0; i < to.ItemsCount; i++)
             {
                 var currentItem = to[i];
-                var itemSize = SnapshotItemsInfo.GetSize(currentItem.Item.GetType());
+                var itemSize = Marshal.SizeOf(currentItem.Item.GetType()); // TODO Unsafe.SizeOf
 
                 var pastIndex = pastIndecies[i];
                 
@@ -159,8 +162,7 @@ namespace TeeSharp.Common.Snapshots
                     if (itemSize != 0)
                         offset = outputOffset + 2;
 
-                    if (DiffItem(pastItem.Item, currentItem.Item,
-                            outputData, offset) != 0)
+                    if (DiffItem(pastItem.Item, currentItem.Item, outputData.Slice(offset)) != 0)
                     {
                         outputData[outputOffset++] = (int) currentItem.Item.Type;
                         outputData[outputOffset++] = currentItem.Id;
@@ -180,10 +182,8 @@ namespace TeeSharp.Common.Snapshots
                     if (itemSize == 0)
                         outputData[outputOffset++] = itemSize / sizeof(int);
 
-                    var data = currentItem.Item.ToArray();
-                    var output = outputData.AsSpan(outputOffset, data.Length);
-                    data.CopyTo(output);
-
+                    var data = currentItem.Item.Data;
+                    data.CopyTo(outputData.Slice(outputOffset, data.Length));
                     outputOffset += data.Length;
                     numUpdatedItems++;
                 }
@@ -214,18 +214,17 @@ namespace TeeSharp.Common.Snapshots
         //    newItem.Deserialize(newData, 0);
         //}
 
-        private static int DiffItem(BaseSnapshotItem past, BaseSnapshotItem current,
-            int[] outputData, int outputOffset)
+        private static int DiffItem(ISnapshotItem past, ISnapshotItem current, Span<int> outputData)
         {
             var needed = 0;
-            var pastData = past.ToArray();
-            var currentdata = current.ToArray();
+            var pastData = past.Data;
+            var currentdata = current.Data;
 
-            for (int i = 0; i < pastData.Length; i++)
+            for (var i = 0; i < pastData.Length; i++)
             {
                 var @out = currentdata[i] - pastData[i];
                 needed |= @out;
-                outputData[outputOffset++] = @out;
+                outputData[i] = @out;
             }
 
             return needed;

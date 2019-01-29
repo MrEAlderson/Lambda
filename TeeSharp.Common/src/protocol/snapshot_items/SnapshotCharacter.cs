@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using TeeSharp.Common.Enums;
+using TeeSharp.Common.Snapshots;
+using TeeSharp.Common.Snapshots.Extensions;
 
 namespace TeeSharp.Common.Protocol
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-    public class SnapshotCharacter : SnapshotCharacterCore, IEquatable<SnapshotCharacter>
+    public struct SnapshotCharacter : ISnapshotItem, IEquatable<SnapshotCharacter>
     {
-        public override SnapshotItems Type => SnapshotItems.Character;
+        public SnapshotItems Type => SnapshotItems.Character;
+        public Span<int> Data => this.IntData();
 
+        public SnapshotCharacterCore CharacterCore;
         [MarshalAs(UnmanagedType.I4)] public int Health;
         [MarshalAs(UnmanagedType.I4)] public int Armor;
         [MarshalAs(UnmanagedType.I4)] public int AmmoCount;
@@ -19,31 +22,22 @@ namespace TeeSharp.Common.Protocol
 
         public bool Equals(SnapshotCharacter other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return base.Equals(other) &&
-                Health == other.Health && 
-                Armor == other.Armor && 
-                AmmoCount == other.AmmoCount && 
-                Weapon == other.Weapon &&
-                Emote == other.Emote && 
-                AttackTick == other.AttackTick && 
-                TriggeredEvents == other.TriggeredEvents;
+            return CharacterCore.Equals(other.CharacterCore) && Health == other.Health && Armor == other.Armor &&
+                   AmmoCount == other.AmmoCount && Weapon == other.Weapon && Emote == other.Emote &&
+                   AttackTick == other.AttackTick && TriggeredEvents == other.TriggeredEvents;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((SnapshotCharacter) obj);
+            return obj is SnapshotCharacter other && Equals(other);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = base.GetHashCode();
+                var hashCode = CharacterCore.GetHashCode();
                 hashCode = (hashCode * 397) ^ Health;
                 hashCode = (hashCode * 397) ^ Armor;
                 hashCode = (hashCode * 397) ^ AmmoCount;

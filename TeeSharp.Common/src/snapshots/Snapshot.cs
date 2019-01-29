@@ -43,7 +43,7 @@ namespace TeeSharp.Common.Snapshots
 
             for (var i = 0; i < _items.Length; i++)
             {
-                var data = _items[i].Item.ToArray();
+                var data = _items[i].Item.Data;
                 for (var field = 0; field < data.Length; field++)
                 {
                     crc += data[field];
@@ -59,7 +59,7 @@ namespace TeeSharp.Common.Snapshots
             for (var i = 0; i < _items.Length; i++)
             {
                 Debug.Log("snapshot", $"type={_items[i].Item.Type} id={_items[i].Id}");
-                var data = _items[i].Item.ToArray();
+                var data = _items[i].Item.Data;
                 for (var field = 0; field < data.Length; field++)
                     Debug.Log("snapshot", $"field={field} value={data[field]}");
             }

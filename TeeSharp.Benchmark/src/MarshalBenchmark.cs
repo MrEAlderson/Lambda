@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using TeeSharp.Common.Enums;
 using BenchmarkDotNet.Attributes;
 using TeeSharp.Common.Protocol;
+using TeeSharp.Common.Snapshots.Extensions;
 
 namespace TeeSharp.Benchmark
 {
@@ -63,7 +64,7 @@ namespace TeeSharp.Benchmark
         {
             for (var i = 0; i < 100000; i++)
             {
-                var data = _input2.ToArray();
+                var data = _input2.IntData();
             }
         }
 

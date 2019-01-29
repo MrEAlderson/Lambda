@@ -118,22 +118,22 @@ namespace TeeSharp.Server.Game.Entities
             Destroy();
         }
 
-        public override void OnPredictedInput(SnapshotPlayerInput newInput)
+        public override void OnPredictedInput(in SnapshotPlayerInput newInput)
         {
             if (!Input.Equals(newInput))
                 LastAction = Server.Tick;
 
-            Input.Fill(newInput);
+            Input = newInput;
             NumInputs++;
 
             if (Input.TargetX == 0 && Input.TargetY == 0)
                 Input.TargetY = -1;
         }
 
-        public override void OnDirectInput(SnapshotPlayerInput newInput)
+        public override void OnDirectInput(in SnapshotPlayerInput newInput)
         {
-            LatestPrevInput.Fill(LatestInput);
-            LatestInput.Fill(newInput);
+            LatestPrevInput = LatestInput;
+            LatestInput = newInput;
 
             if (LatestInput.TargetX == 0 && LatestInput.TargetY == 0)
                 LatestInput.TargetY = -1;
@@ -144,7 +144,7 @@ namespace TeeSharp.Server.Game.Entities
                 FireWeapon();
             }
 
-            LatestPrevInput.Fill(LatestInput);
+            LatestPrevInput = LatestInput;
         }
 
         protected override void DoWeaponSwitch()
@@ -622,8 +622,8 @@ namespace TeeSharp.Server.Game.Entities
             Input.Fire &= SnapshotPlayerInput.StateMask;
             Input.IsJump = false;
             
-            LatestInput.Fill(Input);
-            LatestPrevInput.Fill(Input);
+            LatestInput = Input;
+            LatestPrevInput = Input;
         }
 
         public override void Tick()
@@ -661,8 +661,8 @@ namespace TeeSharp.Server.Game.Entities
                 var predicted = new SnapshotCharacter();
                 var current = new SnapshotCharacter();
 
-                ReckoningCore.Write(predicted);
-                Core.Write(current);
+                ReckoningCore.Write(ref predicted.CharacterCore);
+                Core.Write(ref current.CharacterCore);
 
                 if (ReckoningTick + Server.TickSpeed * 3 < Server.Tick || !current.Equals(predicted))
                 {
@@ -716,7 +716,7 @@ namespace TeeSharp.Server.Game.Entities
 
             if (ReckoningTick == 0 || GameWorld.Paused)
             {
-                character.Tick = 0;
+                character.Value.CharacterCore.Tick = 0;
                 Core.Write(character);
             }
             else

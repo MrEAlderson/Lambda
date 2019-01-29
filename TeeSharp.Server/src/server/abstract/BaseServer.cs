@@ -74,8 +74,8 @@ namespace TeeSharp.Server
         public abstract bool SendPackMsg<T>(T msg, MsgFlags flags, int clientId)
             where T : BaseGameMessage;
 
-        public abstract T SnapshotItem<T>(int id) where T : BaseSnapshotItem, new();
-        public abstract bool SnapshotItem<T>(T item, int id) where T : BaseSnapshotItem;
+        public abstract ref T? SnapshotItem<T>(int id) where T : struct, ISnapshotItem;
+        public abstract bool SnapshotItem<T>(T item, int id) where T : ISnapshotItem;
 
         public abstract int SnapshotNewId();
         public abstract void SnapshotFreeId(int id);

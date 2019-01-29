@@ -3,21 +3,21 @@ using System.Runtime.InteropServices;
 using TeeSharp.Common.Enums;
 using TeeSharp.Common.Game;
 using TeeSharp.Common.Snapshots;
-using TeeSharp.Core;
+using TeeSharp.Common.Snapshots.Extensions;
 using TeeSharp.Core.Extensions;
 
 namespace TeeSharp.Common.Protocol
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-    public class SnapshotDemoClientInfo : BaseSnapshotItem
+    public struct SnapshotDemoClientInfo : ISnapshotItem
     {
-        public override SnapshotItems Type => SnapshotItems.DemoClientInfo;
+        public SnapshotItems Type => SnapshotItems.DemoClientInfo;
+        public Span<int> Data => this.IntData();
 
         public SkinPartParams this[SkinPart part]
         {
             set
             {
-                var index = 0;
                 switch (part)
                 {
                     case SkinPart.Body:
@@ -43,7 +43,7 @@ namespace TeeSharp.Common.Protocol
                 }
 
                 SkinPartUseCustomColors[(int) part] = value.UseCustomColor ? 1 : 0;
-                SkinPartColors[(int)part] = value.Color;
+                SkinPartColors[(int) part] = value.Color;
             }
         }
 

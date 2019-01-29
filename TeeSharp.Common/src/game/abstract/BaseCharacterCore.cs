@@ -26,15 +26,14 @@ namespace TeeSharp.Common
 
         protected virtual WorldCore World { get; set; }
         protected virtual BaseMapCollision MapCollision { get; set; }
-        protected virtual SnapshotCharacter QuantizeCore { get; set; }
 
         public abstract void Init(WorldCore worldCore, BaseMapCollision mapCollision);
         public abstract void Reset();
-        public abstract void Tick(SnapshotPlayerInput input);
+        public abstract void Tick(in SnapshotPlayerInput? input);
         public abstract void Move();
-        public abstract void Write(SnapshotCharacterCore core);
+        public abstract void Write(ref SnapshotCharacterCore core);
         public abstract void Quantize();
-        public abstract void Read(SnapshotCharacter core);
+        public abstract void Read(in SnapshotCharacterCore core);
         public abstract void Fill(BaseCharacterCore from);
     }
 }

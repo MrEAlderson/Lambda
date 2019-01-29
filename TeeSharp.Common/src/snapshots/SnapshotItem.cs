@@ -4,14 +4,13 @@
     {
         public readonly int Id;
         public readonly int Key;
-        public readonly BaseSnapshotItem Item;
+        public readonly ISnapshotItem Item;
 
-        // TODO make cached serialize
-        public SnapshotItem(int id, BaseSnapshotItem item)
+        public SnapshotItem(int id, ISnapshotItem item)
         {
+            Item = item;
             Key = Snapshot.Key(id, item.Type);
             Id = id;
-            Item = item;
         }
     }
 }

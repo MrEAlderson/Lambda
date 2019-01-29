@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using TeeSharp.Common.Enums;
 using TeeSharp.Common.Protocol;
+using TeeSharp.Common.Snapshots.Extensions;
 
 namespace TeeSharp.Benchmark
 {
@@ -55,29 +56,9 @@ namespace TeeSharp.Benchmark
         {
             for (var i = 0; i < 100000; i++)
             {
-                var data1 = _first.ToArray().AsSpan();
-                var data2 = _second.ToArray().AsSpan();
+                var data1 = _first.IntData();
+                var data2 = _second.IntData();
                 var equals = data1.SequenceEqual(data2);
-            }
-        }
-
-        [Benchmark]
-        public void MethodMarshal()
-        {
-            for (var i = 0; i < 100000; i++)
-            {
-                var data1 = _first.ToArray();
-                var data2 = _second.ToArray();
-                var equals = true;
-
-                for (var index = 0; index < data1.Length; index++)
-                {
-                    if (data1[index] != data2[index])
-                    {
-                        equals = false;
-                        break;
-                    }
-                }
             }
         }
     }

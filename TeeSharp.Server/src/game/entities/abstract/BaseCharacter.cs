@@ -68,9 +68,10 @@ namespace TeeSharp.Server.Game.Entities
         protected virtual int EmoteStopTick { get; set; }
         protected virtual Emote Emote { get; set; }
 
-        protected virtual SnapshotPlayerInput Input { get; set; }
-        protected virtual SnapshotPlayerInput LatestPrevInput { get; set; }
-        protected virtual SnapshotPlayerInput LatestInput { get; set; }
+        protected SnapshotPlayerInput Input;
+        protected SnapshotPlayerInput LatestPrevInput;
+        protected SnapshotPlayerInput LatestInput;
+
         protected virtual int LastAction { get; set; }
         protected virtual int NumInputs { get; set; }
 
@@ -91,8 +92,8 @@ namespace TeeSharp.Server.Game.Entities
         {
         }
 
-        public abstract void OnDirectInput(SnapshotPlayerInput newInput);
-        public abstract void OnPredictedInput(SnapshotPlayerInput newInput);
+        public abstract void OnDirectInput(in SnapshotPlayerInput newInput);
+        public abstract void OnPredictedInput(in SnapshotPlayerInput newInput);
         public abstract void Die(int killer, Weapon weapon);
         public abstract void SetEmote(Emote emote, int stopTick);
         public abstract void SetWeapon(Weapon weapon);

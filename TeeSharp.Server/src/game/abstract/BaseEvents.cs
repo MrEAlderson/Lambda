@@ -9,7 +9,7 @@ namespace TeeSharp.Server.Game
     {
         public struct EventInfo
         {
-            public BaseSnapshotEvent EventItem;
+            public ISnapshotItem EventItem;
             public int Mask;
         }
 
@@ -18,7 +18,7 @@ namespace TeeSharp.Server.Game
         protected virtual BaseGameContext GameContext { get; set; }
         protected virtual BaseServer Server { get; set; }
 
-        public abstract T Create<T>(Vector2 position, int mask = -1) where T : BaseSnapshotEvent, new();
+        public abstract T Create<T>(Vector2 position, int mask = -1) where T : struct, ISnapshotItem;
         public abstract void Init();
         public abstract void Clear();
         public abstract void OnSnapshot(int snappingClient);

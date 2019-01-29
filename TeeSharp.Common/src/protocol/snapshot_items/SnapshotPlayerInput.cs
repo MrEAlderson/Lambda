@@ -2,15 +2,17 @@
 using System.Runtime.InteropServices;
 using TeeSharp.Common.Enums;
 using TeeSharp.Common.Snapshots;
+using TeeSharp.Common.Snapshots.Extensions;
 
 namespace TeeSharp.Common.Protocol
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-    public class SnapshotPlayerInput : BaseSnapshotItem, IEquatable<SnapshotPlayerInput>
+    public struct SnapshotPlayerInput : ISnapshotItem, IEquatable<SnapshotPlayerInput>
     {
         public const int StateMask = 0b111111;
 
-        public override SnapshotItems Type => SnapshotItems.PlayerInput;
+        public SnapshotItems Type => SnapshotItems.PlayerInput;
+        public Span<int> Data => this.IntData();
 
         public bool IsJump
         {
@@ -50,42 +52,18 @@ namespace TeeSharp.Common.Protocol
             return true;
         }
 
-        public void Fill(SnapshotPlayerInput from)
-        {
-            Direction = from.Direction;
-            TargetX = from.TargetX;
-            TargetY = from.TargetY;
-            Jump = from.Jump;
-            Fire = from.Fire;
-            Hook = from.Hook;
-            PlayerFlags = from.PlayerFlags;
-            WantedWeapon = from.WantedWeapon;
-            NextWeapon = from.NextWeapon;
-            PreviousWeapon = from.PreviousWeapon;
-        }
-
         public bool Equals(SnapshotPlayerInput other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Direction == other.Direction && 
-                   TargetX == other.TargetX && 
-                   TargetY == other.TargetY &&
-                   Jump == other.Jump && 
-                   Fire == other.Fire && 
-                   Hook == other.Hook &&
-                   PlayerFlags == other.PlayerFlags &&
-                   WantedWeapon == other.WantedWeapon && 
-                   NextWeapon == other.NextWeapon &&
+            return Direction == other.Direction && TargetX == other.TargetX && TargetY == other.TargetY &&
+                   Jump == other.Jump && Fire == other.Fire && Hook == other.Hook && PlayerFlags == other.PlayerFlags &&
+                   WantedWeapon == other.WantedWeapon && NextWeapon == other.NextWeapon &&
                    PreviousWeapon == other.PreviousWeapon;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((SnapshotPlayerInput) obj);
+            return obj is SnapshotPlayerInput other && Equals(other);
         }
 
         public override int GetHashCode()

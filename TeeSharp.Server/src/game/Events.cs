@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TeeSharp.Common;
 
 namespace TeeSharp.Server.Game
@@ -21,6 +22,7 @@ namespace TeeSharp.Server.Game
                 },
                 Mask = mask
             };
+            
             EventInfos.Add(info);
 
             return (T) info.EventItem;
